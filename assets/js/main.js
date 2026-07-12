@@ -2,7 +2,7 @@
 // GETPWND MAIN SCRIPT
 // =========================
 
-console.log("GETPWND site loaded successfully.");
+console.log("PWND site loaded successfully.");
 
 
 // =========================
@@ -49,7 +49,7 @@ if (themeToggle) {
 // TYPEWRITER EFFECT
 // =========================
 const typewriter = document.getElementById("typewriter");
-const text = "GETPWND — Protecting Children Online.";
+const text = "PWND — Protecting Children Online.";
 let index = 0;
 
 function typeEffect() {
