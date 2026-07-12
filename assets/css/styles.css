@@ -5,7 +5,7 @@ body {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
   color: #ffffff;
-  background: #0f0c29 url("../img/Noob.gif") no-repeat center center/cover;
+  background: #0f0c29 url("../img/background.gif") no-repeat center center/cover;
   min-height: 100vh;
 }
 body::before {
