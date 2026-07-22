@@ -49,10 +49,6 @@
               500: '#06b6d4',
               600: '#0891b2',
               700: '#0e7490'
-            },
-            accent: {
-              400: '#60a5fa',
-              500: '#3b82f6'
             }
           },
           boxShadow: {
@@ -68,7 +64,7 @@
   </script>
 </head>
 
-<body class="bg-slate-950 font-sans text-white antialiased selection:bg-brand-500/30">
+<body class="bg-slate-950 pb-28 font-sans text-white antialiased selection:bg-cyan-500/30 md:pb-24">
   <div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.14),transparent_30%),radial-gradient(circle_at_85%_15%,rgba(59,130,246,0.12),transparent_25%),linear-gradient(to_bottom,rgba(2,6,23,1),rgba(3,7,18,1))]"></div>
   <div class="pointer-events-none fixed inset-0 -z-10 bg-grid bg-[size:34px_34px] opacity-[0.14]"></div>
 
@@ -89,10 +85,12 @@
       </div>
       <h2 class="mt-5 font-display text-2xl font-bold">Verification required</h2>
       <p class="mt-2 text-sm text-slate-300">Complete the CAPTCHA to continue.</p>
+
       <div class="mt-6 flex justify-center">
         <div class="g-recaptcha" data-sitekey="6LcKqQ0tAAAAAArEF3En0pE4uCRN915LyBvWAnHc"></div>
       </div>
-      <button id="captcha-submit" class="mt-6 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
+
+      <button id="captcha-submit" type="button" class="mt-6 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
         Verify Access
       </button>
     </div>
@@ -450,14 +448,65 @@
     </div>
   </section>
 
-  <footer class="border-t border-white/10 px-6 py-8 text-center">
-    <p class="text-slate-300">© <span id="year"></span> PWND. Built for protection not profit.</p>
-    <p class="mt-3 text-sm text-slate-400">
-      Website built by
-      <span class="font-semibold text-cyan-300">notfound.tony</span>
-      <span class="font-semibold text-cyan-300">Deadestzombiealive</span>
-    </p>
+  <footer class="border-t border-white/10 bg-slate-950/70 px-6 py-12">
+    <div class="mx-auto grid max-w-7xl gap-10 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <p class="font-display text-xl font-bold tracking-[0.25em] text-white">GETPWND</p>
+        <p class="mt-4 max-w-md leading-7 text-slate-400">
+          A digital child-protection initiative focused on awareness, documentation, and responsible reporting of harmful online behaviour.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">Navigation</h3>
+        <ul class="mt-4 space-y-3 text-sm text-slate-400">
+          <li><a href="#about" class="transition hover:text-white">About</a></li>
+          <li><a href="#numbers" class="transition hover:text-white">Numbers</a></li>
+          <li><a href="#report" class="transition hover:text-white">Report</a></li>
+          <li><a href="#contact" class="transition hover:text-white">Contact</a></li>
+          <li><a href="#faq" class="transition hover:text-white">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">Policies</h3>
+        <ul class="mt-4 space-y-3 text-sm text-slate-400">
+          <li><a href="/privacy.html" class="transition hover:text-white">Privacy Policy</a></li>
+          <li><a href="/terms.html" class="transition hover:text-white">Terms of Use</a></li>
+          <li><a href="/disclaimer.html" class="transition hover:text-white">Disclaimer</a></li>
+          <li><a href="mailto:pwndme@dnmx.cc" class="transition hover:text-white">Email</a></li>
+          <li><a href="https://discord.gg/q2B43czYXc" target="_blank" class="transition hover:text-white">Discord</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mx-auto mt-10 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+      <p>© <span id="year"></span> PWND. Built for protection not profit.</p>
+      <p>
+        Website built by
+        <span class="font-semibold text-cyan-300">notfound.tony</span>
+        <span class="font-semibold text-cyan-300">Deadestzombiealive</span>
+      </p>
+    </div>
   </footer>
+
+  <div id="sticky-cta" class="fixed bottom-4 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-3xl -translate-x-1/2 rounded-2xl border border-cyan-400/20 bg-slate-900/90 p-3 shadow-2xl backdrop-blur xl:bottom-6">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">Need to report something?</p>
+        <p class="text-sm text-slate-300 md:text-base">Document suspicious behaviour and submit a report securely.</p>
+      </div>
+
+      <div class="flex gap-3">
+        <a href="#report" class="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400">
+          File a Report
+        </a>
+        <a href="#contact" class="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+          Contact
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
@@ -532,6 +581,39 @@
         icon.textContent = answer.classList.contains("hidden") ? "+" : "−";
       });
     });
+
+    const stickyCta = document.getElementById("sticky-cta");
+    const reportSection = document.getElementById("report");
+    if (stickyCta && reportSection) {
+      const observer = new IntersectionObserver(([entry]) => {
+        stickyCta.classList.toggle("hidden", entry.isIntersecting);
+      }, { threshold: 0.2 });
+      observer.observe(reportSection);
+    }
+
+    const captchaGate = document.getElementById("captcha-gate");
+    const captchaSubmit = document.getElementById("captcha-submit");
+
+    if (sessionStorage.getItem("captchaVerified") === "true" && captchaGate) {
+      captchaGate.classList.add("hidden");
+    } else {
+      document.body.classList.add("overflow-hidden");
+    }
+
+    if (captchaSubmit && captchaGate) {
+      captchaSubmit.addEventListener("click", () => {
+        const response = grecaptcha.getResponse();
+
+        if (!response) {
+          alert("Please complete the CAPTCHA first.");
+          return;
+        }
+
+        captchaGate.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        sessionStorage.setItem("captchaVerified", "true");
+      });
+    }
 
     checkSiteStatus();
     loadThreatFeed();
