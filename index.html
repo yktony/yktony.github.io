@@ -19,16 +19,17 @@
 
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
-    img-src 'self' https:;
-    script-src 'self' https://cdn.tailwindcss.com https://www.google.com/recaptcha/api.js;
+    img-src 'self' https: data:;
+    script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
+    frame-src https://www.google.com/recaptcha/;
     connect-src 'self' https://formspree.io https://cve.circl.lu;
   ">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -41,13 +42,25 @@
           },
           colors: {
             brand: {
-              400: '#38bdf8',
-              500: '#0ea5e9',
-              600: '#0284c7'
+              50: '#ecfeff',
+              100: '#cffafe',
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490'
+            },
+            accent: {
+              400: '#60a5fa',
+              500: '#3b82f6'
             }
           },
           boxShadow: {
-            glow: '0 0 30px rgba(14, 165, 233, 0.25)'
+            glow: '0 0 0 1px rgba(34,211,238,.16), 0 0 40px rgba(6,182,212,.12)',
+            panel: '0 10px 40px rgba(2,6,23,.45)'
+          },
+          backgroundImage: {
+            grid: 'linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px)'
           }
         }
       }
@@ -55,142 +68,114 @@
   </script>
 </head>
 
-<body class="relative bg-slate-950 text-white font-sans antialiased">
-  <!-- 🔥 GLOBAL SITE KILL SWITCH -->
-  <div
-    id="site-offline"
-    class="fixed inset-0 z-[999999999] hidden bg-black px-10 py-10 text-center text-white"
-  >
-    <h1 class="mb-4 font-display text-4xl md:text-5xl">⚠️ FBI — SYSTEM UNDER MAINTENANCE</h1>
-    <p class="text-lg opacity-80 md:text-xl">
-      This website is temporarily offline for investigation and security updates.<br>
-      Please check back later.
-    </p>
+<body class="bg-slate-950 font-sans text-white antialiased selection:bg-brand-500/30">
+  <div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.14),transparent_30%),radial-gradient(circle_at_85%_15%,rgba(59,130,246,0.12),transparent_25%),linear-gradient(to_bottom,rgba(2,6,23,1),rgba(3,7,18,1))]"></div>
+  <div class="pointer-events-none fixed inset-0 -z-10 bg-grid bg-[size:34px_34px] opacity-[0.14]"></div>
+
+  <div id="site-offline" class="fixed inset-0 z-[999999] hidden items-center justify-center bg-black px-6 text-center">
+    <div>
+      <h1 class="font-display text-4xl md:text-5xl">⚠️ SYSTEM UNDER MAINTENANCE</h1>
+      <p class="mt-4 text-slate-300 md:text-lg">
+        This website is temporarily offline for investigation and security updates.<br>
+        Please check back later.
+      </p>
+    </div>
   </div>
 
-  <script>
-    async function checkSiteStatus() {
-      try {
-        const res = await fetch("status.json?_=" + Date.now());
-        const data = await res.json();
-
-        if (data.online === false) {
-          document.body.innerHTML = "";
-          document.getElementById("site-offline").style.display = "block";
-        }
-      } catch (e) {
-        console.error("Status check failed", e);
-      }
-    }
-
-    checkSiteStatus();
-  </script>
-
-  <script>
-    if (navigator.webdriver) {
-      document.body.innerHTML = "";
-    }
-  </script>
-
-  <!-- CAPTCHA GATE -->
-  <div id="captcha-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 px-4">
-    <div id="captcha-box" class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center shadow-2xl">
-      <h2 class="font-display text-2xl font-bold">Verification required</h2>
-      <p class="mt-2 text-sm text-slate-300">Please complete the CAPTCHA to continue.</p>
-
+  <div id="captcha-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 px-4 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-3xl border border-cyan-400/20 bg-slate-900/90 p-8 text-center shadow-2xl">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-500/10">
+        <span class="text-2xl">🛡️</span>
+      </div>
+      <h2 class="mt-5 font-display text-2xl font-bold">Verification required</h2>
+      <p class="mt-2 text-sm text-slate-300">Complete the CAPTCHA to continue.</p>
       <div class="mt-6 flex justify-center">
         <div class="g-recaptcha" data-sitekey="6LcKqQ0tAAAAAArEF3En0pE4uCRN915LyBvWAnHc"></div>
       </div>
-
-      <button
-        id="captcha-submit"
-        class="mt-6 inline-flex rounded-lg bg-brand-500 px-5 py-3 font-semibold text-white transition hover:bg-brand-600"
-      >
-        Verify
+      <button id="captcha-submit" class="mt-6 inline-flex rounded-xl border border-cyan-400/20 bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
+        Verify Access
       </button>
     </div>
   </div>
 
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
-  <nav class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur">
+  <nav class="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-      <a href="#top" class="font-display text-xl font-bold tracking-wide text-white">GETPWND</a>
+      <a href="#top" class="font-display text-xl font-bold tracking-[0.3em] text-white">GETPWND</a>
 
       <div class="flex items-center gap-3">
-        <button
-          id="theme-toggle"
-          class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm transition hover:bg-slate-800"
-        >
+        <button id="theme-toggle" class="rounded-xl border border-slate-700/80 bg-slate-900 px-3 py-2 text-sm transition hover:bg-slate-800">
           🌓
         </button>
-
-        <button
-          class="nav__toggle rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-lg transition hover:bg-slate-800 md:hidden"
-        >
+        <button id="menu-toggle" class="rounded-xl border border-slate-700/80 bg-slate-900 px-3 py-2 text-sm md:hidden">
           ☰
         </button>
       </div>
 
-      <ul
-        class="nav__menu hidden items-center gap-6 text-sm font-medium text-slate-200 md:flex"
-        data-visible="false"
-      >
-        <li><a href="#about" class="transition hover:text-brand-400">About</a></li>
-        <li><a href="#numbers" class="transition hover:text-brand-400">Numbers</a></li>
-        <li><a href="#projects" class="transition hover:text-brand-400">Projects</a></li>
-        <li><a href="#skills" class="transition hover:text-brand-400">Skills</a></li>
-        <li><a href="#report" class="transition hover:text-brand-400">Report</a></li>
-        <li><a href="#contact" class="transition hover:text-brand-400">Contact</a></li>
-        <li><a href="#support" class="transition hover:text-brand-400">Support</a></li>
-        <li><a href="#faq" class="transition hover:text-brand-400">FAQ</a></li>
+      <ul id="mobile-menu" class="absolute left-0 top-full hidden w-full flex-col gap-1 border-b border-white/10 bg-slate-950/95 px-6 py-4 text-sm md:static md:flex md:w-auto md:flex-row md:items-center md:gap-6 md:border-0 md:bg-transparent md:p-0">
+        <li><a href="#about" class="block py-2 text-slate-200 transition hover:text-cyan-300">About</a></li>
+        <li><a href="#numbers" class="block py-2 text-slate-200 transition hover:text-cyan-300">Numbers</a></li>
+        <li><a href="#projects" class="block py-2 text-slate-200 transition hover:text-cyan-300">Projects</a></li>
+        <li><a href="#skills" class="block py-2 text-slate-200 transition hover:text-cyan-300">Skills</a></li>
+        <li><a href="#report" class="block py-2 text-slate-200 transition hover:text-cyan-300">Report</a></li>
+        <li><a href="#contact" class="block py-2 text-slate-200 transition hover:text-cyan-300">Contact</a></li>
+        <li><a href="#support" class="block py-2 text-slate-200 transition hover:text-cyan-300">Support</a></li>
+        <li><a href="#faq" class="block py-2 text-slate-200 transition hover:text-cyan-300">FAQ</a></li>
       </ul>
     </div>
   </nav>
 
-  <header id="top" class="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center md:py-28">
+  <header id="top" class="mx-auto grid max-w-7xl gap-16 px-6 pb-20 pt-20 md:grid-cols-2 md:items-center md:pb-28 md:pt-28">
     <div>
+      <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">
+        Threat Reporting • Awareness • Protection
+      </div>
+
       <h1 id="typewriter" class="font-display text-4xl font-bold leading-tight md:text-6xl"></h1>
-      <p class="mt-6 max-w-xl text-lg text-slate-300">
-        Child-protection initiative focused on uncovering & reporting online predatory behaviour.
+
+      <p class="mt-6 max-w-xl text-lg leading-8 text-slate-300">
+        A digital child-protection initiative focused on identifying online predatory behaviour, documenting evidence, and encouraging responsible reporting.
       </p>
-      <a
-        href="#about"
-        class="mt-8 inline-flex rounded-lg bg-brand-500 px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
-      >
-        Learn more
-      </a>
+
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#report" class="inline-flex rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
+          File a report
+        </a>
+        <a href="#about" class="inline-flex rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10">
+          Learn more
+        </a>
+      </div>
+
+      <div class="mt-8 flex flex-wrap gap-6 text-sm text-slate-400">
+        <span>Evidence-focused</span>
+        <span>Public awareness</span>
+        <span>Safer online spaces</span>
+      </div>
     </div>
 
-    <div class="flex justify-center md:justify-end">
-      <img
-        src="assets/img/hero.gif"
-        alt="Hero image"
-        class="w-full max-w-md rounded-2xl border border-slate-800 object-cover shadow-glow"
-      >
+    <div class="relative">
+      <div class="absolute inset-0 rounded-[2rem] bg-cyan-500/10 blur-3xl"></div>
+      <div class="relative overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-slate-900/50 p-3 shadow-glow">
+        <img src="assets/img/hero.gif" alt="Hero image" class="w-full rounded-[1.4rem] object-cover">
+      </div>
     </div>
   </header>
 
-  <section id="about" class="border-t border-slate-900 py-20">
+  <section id="about" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">About us</h2>
+      <div class="mb-10 max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Mission</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Built around reporting, documentation, and digital awareness</h2>
+      </div>
 
-      <div class="mt-10 grid gap-10 md:grid-cols-2 md:items-center">
-        <div>
+      <div class="grid gap-8 md:grid-cols-2 md:items-center">
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-panel">
           <p class="leading-8 text-slate-300">
-            PWND is a child protection initiative focused on uncovering and reporting online
-            predatory behaviour. Through careful documentation and evidence collection, we aim to
-            assist law enforcement and raise public awareness while operating within legal and
-            ethical standards.
+            PWND is focused on uncovering and reporting online predatory behaviour through structured evidence collection, public awareness, and responsible escalation. The goal is to help people recognize warning signs and make it easier to act when harmful behaviour is observed.
           </p>
         </div>
 
-        <div>
-          <img
-            src="assets/img/about.gif"
-            alt="About image"
-            class="w-full rounded-2xl border border-slate-800 object-cover shadow-lg"
-          >
+        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-3 shadow-panel">
+          <img src="assets/img/about.gif" alt="About image" class="w-full rounded-[1.4rem] object-cover">
         </div>
       </div>
     </div>
@@ -198,21 +183,22 @@
 
   <section id="numbers" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">By the numbers</h2>
+      <div class="mb-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Impact snapshot</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Key reporting metrics</h2>
+      </div>
 
-      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
-          <span class="counter block text-4xl font-bold text-brand-400" data-target="164">0</span>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-[2rem] border border-cyan-400/10 bg-white/5 p-8 shadow-panel">
+          <span class="counter block text-5xl font-extrabold text-cyan-300" data-target="164">0</span>
           <p class="mt-3 text-slate-300">Reports filed</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
-          <span class="counter block text-4xl font-bold text-brand-400" data-target="99">0</span>
+        <div class="rounded-[2rem] border border-cyan-400/10 bg-white/5 p-8 shadow-panel">
+          <span class="counter block text-5xl font-extrabold text-cyan-300" data-target="99">0</span>
           <p class="mt-3 text-slate-300">Predators flagged</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
-          <span class="counter block text-4xl font-bold text-brand-400" data-target="56">0</span>
+        <div class="rounded-[2rem] border border-cyan-400/10 bg-white/5 p-8 shadow-panel">
+          <span class="counter block text-5xl font-extrabold text-cyan-300" data-target="56">0</span>
           <p class="mt-3 text-slate-300">Cases assisted</p>
         </div>
       </div>
@@ -221,79 +207,43 @@
 
   <section id="threat-feed" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Cybersecurity Alerts</h2>
-      <p class="mt-3 max-w-2xl text-slate-300">
-        Stay informed with recent cybersecurity alerts and vulnerability disclosures.
-      </p>
+      <div class="mb-10 max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Threat intel</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Cybersecurity alerts</h2>
+        <p class="mt-4 leading-8 text-slate-300">
+          Recent vulnerability disclosures and cyber alerts help keep visitors informed about the broader online threat environment.
+        </p>
+      </div>
 
-      <div id="threat-list" class="mt-10 grid gap-4">
+      <div id="threat-list" class="grid gap-4">
         <p class="text-slate-400">Loading current alerts...</p>
       </div>
     </div>
   </section>
 
-  <script>
-    async function loadThreatFeed() {
-      try {
-        const response = await fetch("https://cve.circl.lu/api/last");
-        const data = await response.json();
-
-        const container = document.getElementById("threat-list");
-        container.innerHTML = "";
-
-        data.slice(0, 5).forEach(item => {
-          const div = document.createElement("div");
-          div.className = "rounded-2xl border border-slate-800 bg-slate-900/60 p-6";
-          div.innerHTML = `
-            <h3 class="text-lg font-semibold text-brand-400">${item.id}</h3>
-            <p class="mt-2 text-slate-300">${item.summary}</p>
-          `;
-          container.appendChild(div);
-        });
-      } catch (error) {
-        document.getElementById("threat-list").innerHTML =
-          "<p class='text-slate-400'>Unable to load alerts at this time.</p>";
-      }
-    }
-
-    loadThreatFeed();
-  </script>
-
   <section id="safety" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Online Safety Education</h2>
+      <div class="mb-10 max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Education</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Recognize manipulation patterns online</h2>
+      </div>
 
-      <p class="mt-3 max-w-2xl text-slate-300">
-        Understanding how online predators operate is an important step in protecting yourself and others.
-      </p>
-
-      <div class="mt-10 grid gap-6 md:grid-cols-2">
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 class="text-xl font-semibold">How grooming begins</h3>
-          <p class="mt-3 text-slate-300">
-            Predators often start by building trust offering compliments gifts or emotional support to create a false sense of safety.
-          </p>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
+          <h3 class="text-xl font-semibold text-white">How grooming begins</h3>
+          <p class="mt-3 leading-7 text-slate-300">Predators often start by building trust through attention, praise, emotional support, or gifts to create a false sense of safety.</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 class="text-xl font-semibold">Warning signs to watch for</h3>
-          <p class="mt-3 text-slate-300">
-            Sudden secrecy requests to move conversations to private platforms or attempts to isolate a minor from friends and family are common red flags.
-          </p>
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
+          <h3 class="text-xl font-semibold text-white">Warning signs to watch for</h3>
+          <p class="mt-3 leading-7 text-slate-300">Requests for secrecy, pressure to move to private channels, and attempts to isolate a young person are common red flags.</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 class="text-xl font-semibold">Protecting your accounts</h3>
-          <p class="mt-3 text-slate-300">
-            Use strong passwords enable two factor authentication and avoid sharing personal information with strangers online.
-          </p>
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
+          <h3 class="text-xl font-semibold text-white">Protecting your accounts</h3>
+          <p class="mt-3 leading-7 text-slate-300">Use strong passwords, enable two-factor authentication, and avoid sharing personal details with strangers online.</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 class="text-xl font-semibold">What to do if you suspect grooming</h3>
-          <p class="mt-3 text-slate-300">
-            Document the behavior avoid confrontation and report the individual to a trusted adult platform moderators or law enforcement.
-          </p>
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
+          <h3 class="text-xl font-semibold text-white">What to do if you suspect grooming</h3>
+          <p class="mt-3 leading-7 text-slate-300">Document the behaviour, avoid direct confrontation, and report it to a trusted adult, moderators, or the relevant authorities.</p>
         </div>
       </div>
     </div>
@@ -301,25 +251,19 @@
 
   <section id="team" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Our Team</h2>
+      <div class="mb-10 max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Operators</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">The people behind the initiative</h2>
+      </div>
 
-      <p class="mt-3 max-w-2xl text-slate-300">
-        PWND was created by individuals committed to protecting young people and promoting safer online spaces.
-      </p>
-
-      <div class="mt-10 grid gap-6 md:grid-cols-2">
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
           <h3 class="text-xl font-semibold">notfound.tony</h3>
-          <p class="mt-3 text-slate-300">
-            Founder and lead developer focused on building tools that help identify and report harmful online behavior.
-          </p>
+          <p class="mt-3 leading-7 text-slate-300">Founder and lead developer focused on building tools that support identification, documentation, and reporting of harmful online behaviour.</p>
         </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+        <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel">
           <h3 class="text-xl font-semibold">Deadestzombiealive</h3>
-          <p class="mt-3 text-slate-300">
-            Co creator and project contributor dedicated to improving online safety and supporting victims of digital exploitation.
-          </p>
+          <p class="mt-3 leading-7 text-slate-300">Co-creator and contributor dedicated to safer online communities and support for victims of digital exploitation.</p>
         </div>
       </div>
     </div>
@@ -327,21 +271,20 @@
 
   <section id="projects" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Projects</h2>
+      <div class="mb-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Projects</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Connected initiatives</h2>
+      </div>
 
-      <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <article class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <article class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-panel">
           <img src="assets/img/discord.gif" alt="Discord project" class="h-56 w-full object-cover">
           <div class="p-6">
             <h3 class="text-xl font-semibold">AboveAll Discord</h3>
-            <p class="mt-3 text-slate-300">
-              Business server providing high-quality scripting services for Roblox players and developers. FSR only.
+            <p class="mt-3 leading-7 text-slate-300">
+              Business server providing scripting services for Roblox players and developers.
             </p>
-            <a
-              href="https://discord.gg/q2B43czYXc"
-              target="_blank"
-              class="mt-5 inline-flex rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-600"
-            >
+            <a href="https://discord.gg/q2B43czYXc" target="_blank" class="mt-5 inline-flex rounded-xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400">
               Join Discord
             </a>
           </div>
@@ -352,66 +295,40 @@
 
   <section id="skills" class="py-20">
     <div class="mx-auto max-w-7xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Skills</h2>
+      <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Capabilities</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Areas of focus</h2>
+      </div>
 
-      <div class="mt-8 flex flex-wrap gap-3">
-        <span class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-200">Cybersecurity Learner</span>
-        <span class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-200">Certified Therapist</span>
+      <div class="flex flex-wrap gap-3">
+        <span class="rounded-full border border-cyan-400/15 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100">Cybersecurity Learner</span>
+        <span class="rounded-full border border-cyan-400/15 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100">Certified Therapist</span>
       </div>
     </div>
   </section>
 
   <section id="report" class="py-20">
     <div class="mx-auto max-w-4xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Report a Predator</h2>
+      <div class="mb-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Reporting portal</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Report suspicious behaviour</h2>
+        <p class="mt-4 leading-8 text-slate-300">
+          Share relevant information so behaviour can be documented and reviewed appropriately.
+        </p>
+      </div>
 
-      <form
-        class="mt-10 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 md:p-8"
-        action="https://formspree.io/f/xbdejarb"
-        method="POST"
-        enctype="multipart/form-data"
-        id="reportForm"
-        onsubmit="return rateLimit()"
-      >
-        <input
-          type="text"
-          name="platform"
-          placeholder="Platform (Discord, Roblox, Instagram…)"
-          required
-          class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        >
-
-        <input
-          type="text"
-          name="username"
-          placeholder="Predator's username or ID"
-          required
-          class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        >
-
-        <textarea
-          name="details"
-          placeholder="Describe what happened…"
-          required
-          class="min-h-[160px] w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        ></textarea>
+      <form class="space-y-4 rounded-[2rem] border border-cyan-400/10 bg-white/5 p-6 shadow-panel md:p-8" action="https://formspree.io/f/xbdejarb" method="POST" enctype="multipart/form-data" id="reportForm" onsubmit="return rateLimit()">
+        <input type="text" name="platform" placeholder="Platform (Discord, Roblox, Instagram…)" required class="w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400">
+        <input type="text" name="username" placeholder="Predator's username or ID" required class="w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400">
+        <textarea name="details" placeholder="Describe what happened…" required class="min-h-[180px] w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400"></textarea>
 
         <label class="block text-sm text-slate-400">Upload screenshots (optional):</label>
-        <input
-          type="file"
-          name="evidence"
-          accept="image/*"
-          multiple
-          class="block w-full text-sm text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-brand-600"
-        >
+        <input type="file" name="evidence" accept="image/*" multiple class="block w-full text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-cyan-500 file:px-4 file:py-2 file:font-semibold file:text-slate-950 hover:file:bg-cyan-400">
 
         <input type="text" name="_gotcha" class="hidden">
         <input type="text" name="city" autocomplete="off" tabindex="-1" class="hidden">
 
-        <button
-          type="submit"
-          class="inline-flex rounded-lg bg-brand-500 px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
-        >
+        <button type="submit" class="inline-flex rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
           Submit Report
         </button>
       </form>
@@ -420,58 +337,30 @@
 
   <section id="contact" class="py-20">
     <div class="mx-auto max-w-4xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">Contact</h2>
+      <div class="mb-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Communications</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Contact</h2>
+      </div>
 
-      <form
-        class="mt-10 space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 md:p-8"
-        action="https://formspree.io/f/xbdejarb"
-        method="POST"
-        id="contactForm"
-        onsubmit="return rateLimit()"
-      >
-        <input
-          type="text"
-          name="a7384"
-          placeholder="Name"
-          required
-          class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        >
-
-        <input
-          type="email"
-          name="b9021"
-          placeholder="Email"
-          required
-          class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        >
-
-        <textarea
-          name="c4815"
-          placeholder="Message"
-          required
-          class="min-h-[160px] w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-brand-500"
-        ></textarea>
+      <form class="space-y-4 rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel md:p-8" action="https://formspree.io/f/xbdejarb" method="POST" id="contactForm" onsubmit="return rateLimit()">
+        <input type="text" name="a7384" placeholder="Name" required class="w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400">
+        <input type="email" name="b9021" placeholder="Email" required class="w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400">
+        <textarea name="c4815" placeholder="Message" required class="min-h-[180px] w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-4 py-3 text-white placeholder-slate-500 outline-none transition focus:border-cyan-400"></textarea>
 
         <input type="text" name="_gotcha" class="hidden">
         <input type="text" name="city" autocomplete="off" tabindex="-1" class="hidden">
 
-        <button
-          type="submit"
-          class="inline-flex rounded-lg bg-brand-500 px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
-        >
-          Send message
+        <button type="submit" class="inline-flex rounded-xl bg-cyan-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400">
+          Send Message
         </button>
       </form>
 
       <div class="mt-6 flex flex-wrap gap-4 text-sm">
-        <a href="https://discord.gg/q2B43czYXc" target="_blank" class="text-brand-400 transition hover:text-brand-300">Discord</a>
-        <a href="mailto:pwndme@dnmx.cc" class="text-brand-400 transition hover:text-brand-300">Email</a>
+        <a href="https://discord.gg/q2B43czYXc" target="_blank" class="text-cyan-300 transition hover:text-cyan-200">Discord</a>
+        <a href="mailto:pwndme@dnmx.cc" class="text-cyan-300 transition hover:text-cyan-200">Email</a>
       </div>
 
-      <button
-        id="wipe"
-        class="mt-6 inline-flex rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium transition hover:bg-slate-800"
-      >
+      <button id="wipe" class="mt-6 inline-flex rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium transition hover:bg-slate-800">
         Clear all data
       </button>
     </div>
@@ -479,73 +368,81 @@
 
   <section id="support" class="py-20">
     <div class="mx-auto max-w-4xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">If you're struggling</h2>
+      <div class="mb-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Support</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">If you're struggling</h2>
+      </div>
 
-      <p class="mt-6 leading-8 text-slate-300">
-        If you or someone you know is feeling overwhelmed unsafe or emotionally distressed
-        you do not have to face it alone. Reaching out to a trained professional or someone you trust
-        can make a real difference.
-      </p>
-
-      <div class="mt-8 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 md:p-8">
+      <div class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel md:p-8">
         <p class="leading-8 text-slate-300">
-          • Talk to a trusted friend family member teacher or mentor.<br>
-          • Reach out to a licensed mental health professional.<br>
-          • Contact a local crisis hotline or emergency service in your area.<br>
-          • If you ever feel in immediate danger seek emergency help right away.
+          If you or someone you know is feeling overwhelmed, unsafe, or emotionally distressed, you do not have to face it alone. Reaching out to a trained professional or someone you trust can make a real difference.
         </p>
 
-        <div class="mt-6 rounded-xl border border-slate-800 bg-slate-950 p-5">
-          <p class="font-semibold text-white"><strong>Emergency or crisis hotlines in your area:</strong></p>
+        <ul class="mt-6 space-y-3 text-slate-300">
+          <li>• Talk to a trusted friend, family member, teacher, or mentor.</li>
+          <li>• Reach out to a licensed mental health professional.</li>
+          <li>• Contact a local crisis hotline or emergency service in your area.</li>
+          <li>• If you feel in immediate danger, seek emergency help right away.</li>
+        </ul>
+
+        <div class="mt-6 rounded-2xl border border-cyan-400/10 bg-slate-950/70 p-5">
+          <p class="font-semibold text-white">Emergency or crisis hotlines in your area:</p>
           <ul class="mt-3 list-inside list-disc space-y-2 text-slate-300">
             <li>[Priory Wellbeing Centre UK]</li>
             <li>[Emergency services 911]</li>
             <li>[Suicide Hotline 988]</li>
           </ul>
         </div>
-      </div>
 
-      <p class="mt-6 text-slate-300">You deserve safety support and someone who will listen.</p>
+        <p class="mt-6 text-slate-300">You deserve safety, support, and someone who will listen.</p>
+      </div>
     </div>
   </section>
 
   <section id="faq" class="py-20">
     <div class="mx-auto max-w-4xl px-6">
-      <h2 class="font-display text-3xl font-bold md:text-4xl">FAQ</h2>
+      <div class="mb-10">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Questions</p>
+        <h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">Frequently asked questions</h2>
+      </div>
 
-      <div class="mt-10 space-y-4">
-        <div class="faq-item overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-          <button class="faq-question w-full px-6 py-4 text-left text-lg font-semibold transition hover:bg-slate-800/70">
-            What is PWND
+      <div class="space-y-4">
+        <div class="faq-item overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-panel">
+          <button class="faq-question flex w-full items-center justify-between px-6 py-5 text-left text-lg font-semibold transition hover:bg-white/5">
+            <span>What is PWND</span>
+            <span class="text-cyan-300">+</span>
           </button>
-          <div class="faq-answer px-6 pb-5 text-slate-300">
+          <div class="faq-answer hidden px-6 pb-5 text-slate-300">
             <p>PWND is a child protection initiative focused on uncovering and reporting online predatory behavior while assisting law enforcement.</p>
           </div>
         </div>
 
-        <div class="faq-item overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-          <button class="faq-question w-full px-6 py-4 text-left text-lg font-semibold transition hover:bg-slate-800/70">
-            Is my report anonymous
+        <div class="faq-item overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-panel">
+          <button class="faq-question flex w-full items-center justify-between px-6 py-5 text-left text-lg font-semibold transition hover:bg-white/5">
+            <span>Is my report anonymous</span>
+            <span class="text-cyan-300">+</span>
           </button>
-          <div class="faq-answer px-6 pb-5 text-slate-300">
+          <div class="faq-answer hidden px-6 pb-5 text-slate-300">
             <p>Yes. We do not collect personal information unless you choose to provide it. All reports are confidential.</p>
           </div>
         </div>
 
-        <div class="faq-item overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-          <button class="faq-question w-full px-6 py-4 text-left text-lg font-semibold transition hover:bg-slate-800/70">
-            What happens after I submit a report
+        <div class="faq-item overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-panel">
+          <button class="faq-question flex w-full items-center justify-between px-6 py-5 text-left text-lg font-semibold transition hover:bg-white/5">
+            <span>What happens after I submit a report</span>
+            <span class="text-cyan-300">+</span>
           </button>
-          <div class="faq-answer px-6 pb-5 text-slate-300">
+          <div class="faq-answer hidden px-6 pb-5 text-slate-300">
             <p>Your report is reviewed manually. If evidence is valid it is forwarded to the appropriate authorities.</p>
           </div>
         </div>
 
-        <div class="faq-item overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-          <button class="faq-question w-full px-6 py-4 text-left text-lg font-semibold transition hover:bg-slate-800/70">
-            Can I upload screenshots
+        <div class="faq-item overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-panel">
+          <button class="faq-question flex w-full items-center justify-between px-6 py-5 text-left text-lg font-semibold transition hover:bg-white/5">
+            <span>Can I upload screenshots</span>
+            <span class="text-cyan-300">+</span>
           </button>
-          <div class="faq-answer px-6 pb-5 text-slate-300">
+          <div class="faq-answer hidden px-6 pb-5 text-slate-300">
             <p>Yes. You can upload multiple images as evidence when submitting a report.</p>
           </div>
         </div>
@@ -553,17 +450,35 @@
     </div>
   </section>
 
-  <footer class="border-t border-slate-800 px-6 py-8 text-center">
+  <footer class="border-t border-white/10 px-6 py-8 text-center">
     <p class="text-slate-300">© <span id="year"></span> PWND. Built for protection not profit.</p>
-
     <p class="mt-3 text-sm text-slate-400">
       Website built by
-      <span class="font-semibold text-brand-400">notfound.tony</span>
-      <span class="font-semibold text-brand-400">Deadestzombiealive</span>
+      <span class="font-semibold text-cyan-300">notfound.tony</span>
+      <span class="font-semibold text-cyan-300">Deadestzombiealive</span>
     </p>
   </footer>
 
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
   <script>
+    async function checkSiteStatus() {
+      try {
+        const res = await fetch("status.json?_=" + Date.now());
+        const data = await res.json();
+
+        if (data.online === false) {
+          document.body.innerHTML = '<div class="fixed inset-0 flex items-center justify-center bg-black px-6 text-center text-white"><div><h1 class="text-4xl font-bold">⚠️ SYSTEM UNDER MAINTENANCE</h1><p class="mt-4 text-slate-300">This website is temporarily offline for investigation and security updates.<br>Please check back later.</p></div></div>';
+        }
+      } catch (e) {
+        console.error("Status check failed", e);
+      }
+    }
+
+    if (navigator.webdriver) {
+      document.body.innerHTML = "";
+    }
+
     let lastSubmit = 0;
     function rateLimit() {
       const now = Date.now();
@@ -574,8 +489,52 @@
       lastSubmit = now;
       return true;
     }
-  </script>
 
-  <script src="assets/js/main.js"></script>
+    async function loadThreatFeed() {
+      try {
+        const response = await fetch("https://cve.circl.lu/api/last");
+        const data = await response.json();
+
+        const container = document.getElementById("threat-list");
+        container.innerHTML = "";
+
+        data.slice(0, 5).forEach(item => {
+          const div = document.createElement("div");
+          div.className = "rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-panel";
+          div.innerHTML = `
+            <h3 class="text-lg font-semibold text-cyan-300">${item.id}</h3>
+            <p class="mt-2 leading-7 text-slate-300">${item.summary}</p>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        document.getElementById("threat-list").innerHTML =
+          "<p class='text-slate-400'>Unable to load alerts at this time.</p>";
+      }
+    }
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const menuToggle = document.getElementById("menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+        mobileMenu.classList.toggle("flex");
+      });
+    }
+
+    document.querySelectorAll(".faq-question").forEach(button => {
+      button.addEventListener("click", () => {
+        const answer = button.nextElementSibling;
+        const icon = button.querySelector("span:last-child");
+        answer.classList.toggle("hidden");
+        icon.textContent = answer.classList.contains("hidden") ? "+" : "−";
+      });
+    });
+
+    checkSiteStatus();
+    loadThreatFeed();
+  </script>
 </body>
 </html>
